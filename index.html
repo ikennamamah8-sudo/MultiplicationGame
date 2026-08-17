@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiplication Table Master</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body class="bg-vibrant-gradient min-h-screen text-slate-800 flex flex-col justify-between p-3 sm:p-6 select-none">
+
+  <!-- HEADER & SCOREBOARD -->
+  <header class="max-w-4xl mx-auto w-full mb-4">
+    <div class="bg-white/90 backdrop-blur-md rounded-3xl p-4 sm:p-6 shadow-2xl border-4 border-white flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- App Title -->
+      <div class="flex items-center gap-3">
+        <div class="bg-yellow-400 text-yellow-950 p-3 rounded-2xl text-2xl sm:text-3xl shadow-md border-2 border-yellow-300">
+          <i class="fa-solid fa-calculator"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-indigo-950 tracking-wide uppercase leading-none">
+            Math Blast!
+          </h1>
+          <p class="text-xs sm:text-sm font-semibold text-slate-600 mt-1">Multiplication Practice</p>
+        </div>
+      </div>
+
+      <!-- Scoreboard Counters -->
+      <div class="flex items-center gap-2 sm:gap-4 ml-auto">
+        <!-- Correct Count -->
+        <div class="bg-emerald-500 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-2xl flex items-center gap-2 sm:gap-3 shadow-lg border-b-4 border-emerald-700">
+          <i class="fa-solid fa-circle-check text-xl sm:text-3xl text-emerald-200"></i>
+          <div class="text-left">
+            <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-100">Correct</div>
+            <div id="score-correct" class="text-2xl sm:text-4xl font-extrabold leading-none">0</div>
+          </div>
+        </div>
+
+        <!-- Incorrect Count -->
+        <div class="bg-rose-500 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-2xl flex items-center gap-2 sm:gap-3 shadow-lg border-b-4 border-rose-700">
+          <i class="fa-solid fa-circle-xmark text-xl sm:text-3xl text-rose-200"></i>
+          <div class="text-left">
+            <div class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-100">Wrong</div>
+            <div id="score-incorrect" class="text-2xl sm:text-4xl font-extrabold leading-none">0</div>
+          </div>
+        </div>
+
+        <!-- Streak Badge -->
+        <div class="hidden md:flex bg-amber-400 text-amber-950 px-4 py-2 sm:px-5 sm:py-3 rounded-2xl items-center gap-2 shadow-lg border-b-4 border-amber-600">
+          <i class="fa-solid fa-fire text-2xl text-orange-600"></i>
+          <div class="text-left">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-amber-800">Streak</div>
+            <div id="score-streak" class="text-2xl sm:text-4xl font-extrabold leading-none">0</div>
+          </div>
+        </div>
+
+        <!-- Sound Toggle Button -->
+        <button id="sound-btn" onclick="toggleSound()" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 p-3 sm:p-4 rounded-2xl text-xl sm:text-2xl font-bold transition-all border-2 border-indigo-200 active:scale-95" title="Toggle Sound">
+          <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CARD CONTAINER -->
+  <main class="max-w-2xl mx-auto w-full my-auto">
+    <div class="flex flex-row items-center justify-center gap-2 mb-5 flex-nowrap overflow-x-auto">
+      <span class="text-xs font-bold uppercase tracking-[0.18em] text-slate-700 flex-shrink-0">Choose operation:</span>
+      <label class="operator-label px-3 py-1.5 rounded-full border-2 bg-blue-600 text-white text-sm font-semibold shadow-sm transition duration-150 cursor-pointer flex-shrink-0" for="radio-op-add">
+        <input id="radio-op-add" name="op-mode" type="radio" value="add" class="sr-only" checked onchange="changeOperator(this.value)">
+        Sum
+      </label>
+      <label class="operator-label px-3 py-1.5 rounded-full border-2 bg-blue-600 text-white/90 text-sm font-semibold shadow-sm transition duration-150 cursor-pointer flex-shrink-0" for="radio-op-subtract">
+        <input id="radio-op-subtract" name="op-mode" type="radio" value="subtract" class="sr-only" onchange="changeOperator(this.value)">
+        Subtraction
+      </label>
+      <label class="operator-label px-3 py-1.5 rounded-full border-2 bg-blue-600 text-white/90 text-sm font-semibold shadow-sm transition duration-150 cursor-pointer flex-shrink-0" for="radio-op-multiply">
+        <input id="radio-op-multiply" name="op-mode" type="radio" value="multiply" class="sr-only" onchange="changeOperator(this.value)">
+        Multiplication
+      </label>
+      <label class="operator-label px-3 py-1.5 rounded-full border-2 bg-blue-600 text-white/90 text-sm font-semibold shadow-sm transition duration-150 cursor-pointer flex-shrink-0" for="radio-op-divide">
+        <input id="radio-op-divide" name="op-mode" type="radio" value="divide" class="sr-only" onchange="changeOperator(this.value)">
+        Division
+      </label>
+    </div>
+    <div class="bg-white/95 backdrop-blur-lg rounded-3xl p-5 sm:p-8 shadow-2xl border-4 border-white/80 relative overflow-hidden">
+      
+      <!-- Table Selector Bar -->
+      <div class="flex items-center justify-between bg-indigo-50 p-2 sm:p-3 rounded-2xl mb-6 border-2 border-indigo-100 flex-wrap gap-2">
+        <span class="text-xs sm:text-sm font-bold text-indigo-900 uppercase tracking-wide flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-indigo-500"></i> Select Table:
+        </span>
+        <select id="table-select" onchange="changeTableMode(this.value)" class="bg-white text-indigo-900 font-extrabold text-sm sm:text-base px-3 py-1.5 rounded-xl border-2 border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+          <option value="all">Mix All (1 to 12)</option>
+          <option value="easy">Easy Mix (1 to 5)</option>
+          <option value="1">Table of 1</option>
+          <option value="2">Table of 2</option>
+          <option value="3">Table of 3</option>
+          <option value="4">Table of 4</option>
+          <option value="5">Table of 5</option>
+          <option value="6">Table of 6</option>
+          <option value="7">Table of 7</option>
+          <option value="8">Table of 8</option>
+          <option value="9">Table of 9</option>
+          <option value="10">Table of 10</option>
+          <option value="11">Table of 11</option>
+          <option value="12">Table of 12</option>
+        </select>
+      </div>
+
+      <!-- MATH PROBLEM DISPLAY AREA -->
+      <div class="text-center my-4 sm:my-8">
+        <div class="inline-flex items-center justify-center gap-3 sm:gap-6 bg-slate-900 text-white px-6 py-6 sm:px-10 sm:py-8 rounded-3xl shadow-inner border-4 border-slate-700 w-full">
+          <span id="num1" class="text-6xl sm:text-8xl font-black text-amber-400 drop-shadow-md">7</span>
+          <span id="operator-symbol" class="text-5xl sm:text-7xl font-bold text-rose-400">+</span>
+          <span id="num2" class="text-6xl sm:text-8xl font-black text-cyan-400 drop-shadow-md">8</span>
+          <span class="text-5xl sm:text-7xl font-bold text-emerald-400">=</span>
+          <input type="text" id="answer-input" inputmode="decimal" pattern="[-+]?[0-9]*\.?[0-9]+" placeholder="?" autocomplete="off"
+                 class="w-24 sm:w-40 text-5xl sm:text-7xl font-black text-center bg-slate-800 text-yellow-300 border-4 border-yellow-400 rounded-2xl focus:outline-none focus:ring-4 focus:ring-yellow-300 shadow-inner p-1 sm:p-2">
+        </div>
+      </div>
+      <div id="history-panel" class="mt-4 bg-slate-100/80 p-4 rounded-3xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-slate-700 font-bold uppercase tracking-[0.2em] text-xs">History</div>
+          <span id="history-count" class="text-slate-500 text-xs">0 past answers</span>
+        </div>
+        <ol id="answer-history" class="space-y-2 text-sm text-slate-700 leading-tight">
+          <li class="text-slate-500">Answer history will appear here after your first attempt.</li>
+        </ol>
+      </div>
+
+      <!-- FEEDBACK DISPLAY BOX -->
+      <div id="feedback-banner" class="hidden my-4 p-4 rounded-2xl text-center font-extrabold text-xl sm:text-2xl border-4 transition-all animate-pop">
+        <span id="feedback-message"></span>
+      </div>
+
+      <!-- SUBMIT & NEXT BUTTONS -->
+      <div class="flex flex-col sm:flex-row gap-3 mt-6">
+        <button id="submit-btn" onclick="checkAnswer()" 
+                class="btn-tactile flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white text-2xl sm:text-3xl font-black py-4 px-6 rounded-2xl border-b-8 border-emerald-700 uppercase tracking-wider flex items-center justify-center gap-3">
+          <i class="fa-solid fa-paper-plane"></i> Submit Answer
+        </button>
+        <button id="next-btn" onclick="nextQuestion()" 
+                class="hidden btn-tactile flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white text-2xl sm:text-3xl font-black py-4 px-6 rounded-2xl border-b-8 border-indigo-800 uppercase tracking-wider flex items-center justify-center gap-3">
+          Next Question <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- ONSCREEN KEYPAD -->
+      <div class="mt-8 border-t-2 border-slate-100 pt-6">
+        <p class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">On-Screen Keypad</p>
+        <div class="grid grid-cols-3 gap-2.5 max-w-md mx-auto">
+          <button onclick="pressKey('1')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">1</button>
+          <button onclick="pressKey('2')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">2</button>
+          <button onclick="pressKey('3')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">3</button>
+          <button onclick="pressKey('4')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">4</button>
+          <button onclick="pressKey('5')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">5</button>
+          <button onclick="pressKey('6')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">6</button>
+          <button onclick="pressKey('7')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">7</button>
+          <button onclick="pressKey('8')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">8</button>
+          <button onclick="pressKey('9')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">9</button>
+          <button onclick="pressKey('clear')" class="btn-tactile bg-rose-100 hover:bg-rose-200 text-rose-700 text-lg sm:text-xl font-black py-3 rounded-2xl border-2 border-rose-300">CLEAR</button>
+          <button onclick="pressKey('0')" class="btn-tactile bg-slate-100 hover:bg-slate-200 text-slate-800 text-2xl sm:text-3xl font-black py-3 rounded-2xl border-2 border-slate-300">0</button>
+          <button onclick="pressKey('backspace')" class="btn-tactile bg-amber-100 hover:bg-amber-200 text-amber-800 text-lg sm:text-xl font-black py-3 rounded-2xl border-2 border-amber-300">
+            <i class="fa-solid fa-backspace"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="max-w-4xl mx-auto w-full mt-4 text-center">
+    <div class="flex items-center justify-between text-white font-bold text-sm px-2">
+      <button onclick="resetScores()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl border border-green-900 transition-all flex items-center gap-2 active:scale-95">
+        <i class="fa-solid fa-rotate-left"></i> Reset Scoreboard
+      </button>
+      <span class="opacity-90 text-emerald-300">Keep practicing daily! 🚀</span>
+    </div>
+  </footer>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
